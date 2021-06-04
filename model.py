@@ -1,7 +1,7 @@
 import math
 import torch
 import random
-from torch import nn, FloatTensor
+from torch import nn, tensor
 from torch.autograd import Variable
 import torch.nn.functional as F
 
@@ -96,16 +96,16 @@ class Seq2Seq(nn.Module):
         batch_size = src.size(1)
         max_len = trg.size(0)
         vocab_size = self.decoder.output_size
-        outputs = Variable(torch.zeros(max_len, batch_size, vocab_size)).to(self.device)
+        outputs = tensor(torch.zeros(max_len, batch_size, vocab_size)).to(self.device)
 
         encoder_output, hidden = self.encoder(src)
         hidden = hidden[:self.decoder.n_layers]
-        output = Variable(trg.data[0, :])  # sos
+        output = tensor(trg.data[0, :])  # sos
         for t in range(1, max_len):
             output, hidden, attn_weights = self.decoder(
                     output, hidden, encoder_output)
             outputs[t] = output
             is_teacher = random.random() < teacher_forcing_ratio
             top1 = output.data.max(1)[1]
-            output = Variable(trg.data[t] if is_teacher else top1).to(self.device)
+            output = tensor(trg.data[t] if is_teacher else top1).to(self.device)
         return outputs

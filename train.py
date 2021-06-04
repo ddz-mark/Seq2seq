@@ -50,6 +50,7 @@ def train(e, model, optimizer, train_iter, vocab_size, grad_clip, DE, EN, device
         src, len_src = batch.src
         trg, len_trg = batch.trg
         print(src.shape, len_src, trg.shape, len_trg)
+        print(src)
         src, trg = src.to(device), trg.to(device)
         optimizer.zero_grad()
         output = model(src, trg)
@@ -67,10 +68,6 @@ def train(e, model, optimizer, train_iter, vocab_size, grad_clip, DE, EN, device
                   (b, total_loss, math.exp(total_loss)))
             total_loss = 0
         break
-
-def predict():
-    # 预测时也会指定 max_len，遇到 end 进行 break 提前结束
-    pass
 
 
 def main():
@@ -108,9 +105,12 @@ def main():
         # Save the model if the validation loss is the best we've seen so far.
         if not best_val_loss or val_loss < best_val_loss:
             print("[!] saving model...")
-            if not os.path.isdir(".save"):
-                os.makedirs(".save")
-            torch.save(seq2seq.state_dict(), './.save/seq2seq_%d.pt' % (e))
+            if not os.path.isdir(".save/{0}".format(e)):
+                os.makedirs(".save/{0}".format(e))
+            torch.save(seq2seq.state_dict(), './.save/{0}/seq2seq_{1}.pt'.format(e, e))
+            torch.save(encoder.state_dict(), './.save/{0}/encoder_{1}.pt'.format(e, e))
+            torch.save(decoder.state_dict(), './.save/{0}/decoder_{1}.pt'.format(e, e))
+
             best_val_loss = val_loss
     test_loss = evaluate(seq2seq, test_iter, en_size, DE, EN, device)
     print("[TEST] loss:%5.2f" % test_loss)

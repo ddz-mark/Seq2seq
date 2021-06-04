@@ -4,6 +4,7 @@ from torchtext.data import Field, BucketIterator
 from torchtext.datasets import Multi30k
 from spacy.lang.en import English
 from spacy.lang.de import German
+import json
 
 
 def load_dataset(batch_size):
@@ -36,6 +37,13 @@ def load_dataset(batch_size):
 
 if __name__ == '__main__':
     train_iter, val_iter, test_iter, DE, EN = load_dataset(8)
+
+    # print(dict(DE.vocab.stoi))
+    # with open(".data/vocab_de.json", "w") as f:
+    #     json.dump(dict(DE.vocab.stoi), f)
+    # with open(".data/vocab_en.json", "w") as f:
+    #     json.dump(dict(EN.vocab.stoi), f)
+
     for batch_idx, batch_v in enumerate(train_iter):
         print(batch_v)
         src, len_src = batch_v.src
